@@ -8,7 +8,7 @@ The project can be completed by filling in the empty methods
 
 ## File Structure
 
-* proj_sn1_sn2
+* proj_sn1_s4384873
     * content
         * test
             * index.html
