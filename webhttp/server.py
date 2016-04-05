@@ -2,7 +2,7 @@
 
 This module contains a HTTP server
 """
-
+import sys
 import threading
 from socket import *
 
@@ -26,9 +26,11 @@ class ConnectionHandler(threading.Thread):
     
     def handle_connection(self):
         """Handle a new connection"""
-        self.conn_socket.recv(1024)
+        message = self.conn_socket.recv(1024)
         print "Server address: ", self.conn_socket.getsockname()
         print "Client address: ", self.conn_socket.getpeername()
+        print "Client message: ", message
+        sys.stdout.flush()
         self.conn_socket.send("Hello Hessel & Frank!")
         self.conn_socket.close()
         pass
