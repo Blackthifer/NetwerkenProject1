@@ -4,7 +4,7 @@ This module contains a HTTP server
 """
 
 import threading
-import socket
+from socket import *
 
 
 class ConnectionHandler(threading.Thread):
@@ -26,6 +26,11 @@ class ConnectionHandler(threading.Thread):
     
     def handle_connection(self):
         """Handle a new connection"""
+        self.conn_socket.recv(1024)
+        print "Server address: ", self.conn_socket.getsockname()
+        print "Client address: ", self.conn_socket.getpeername()
+        self.conn_socket.send("Hello Hessel & Frank!")
+        self.conn_socket.close()
         pass
         
     def run(self):
@@ -51,7 +56,13 @@ class Server:
     
     def run(self):
         """Run the HTTP Server and start listening"""
+        webSocket = socket(AF_INET,SOCK_STREAM)
+        webSocket.bind(('',self.server_port))
+        webSocket.listen(1)
         while not self.done:
+            (connSocket, address) = webSocket.accept()
+            connHandler = ConnectionHandler(connSocket,address,self.timeout)
+            connHandler.run()
             pass
     
     def shutdown(self):
