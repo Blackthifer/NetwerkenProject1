@@ -4,6 +4,7 @@ This module contains parses for HTTP response and HTTP requests.
 """
 
 import webhttp.message
+import sys
 
 
 class RequestParser:
@@ -20,15 +21,25 @@ class RequestParser:
             buff (str): the buffer contents received from socket
 
         Returns:
-            list of webhttp.Request
+            list of webhttp.message.Request
         """
         requests = self.split_requests(buff)
         
         http_requests = []
         for request in requests:
-            http_request = webhttp.message.Request()
+            #If not GET -> response code 400: bad request
+            lines = request.split('\r\n')
+            lines = filter(None, lines)
+            startLine = lines[0]
+            print startLine
+            parts = startLine.split(' ')
+            print parts[0], ", ", parts[1]
+            if not parts[0].compare("GET"):
+                print "Not a GET request"
+            http_request = webhttp.message.Request(parts[0], parts[1])
             http_requests.append(http_request)
         
+        sys.stdout.flush()
         return http_requests
 
     def split_requests(self, buff):
