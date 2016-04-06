@@ -35,7 +35,7 @@ class ResponseComposer:
 
         # Stub code
         response.code = 200
-        response.set_header("Content-Length", 4)
+        response.set_header("Content-Length", "4")
         response.set_header("Connection", "close")
         response.body = "Test"
 

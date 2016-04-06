@@ -5,6 +5,7 @@ This module contains a HTTP server
 import sys
 import threading
 import webhttp.parser
+import webhttp.composer
 from socket import *
 
 
@@ -33,9 +34,10 @@ class ConnectionHandler(threading.Thread):
         print "Client message: ", message
         sys.stdout.flush()
         reqParser = webhttp.parser.RequestParser()
+        resComposer = webhttp.composer.ResponseComposer(self.timeout)
         requests = reqParser.parse_requests(message)
         for request in requests:
-            self.conn_socket.send(str(request))
+            self.conn_socket.send(str(resComposer.compose_response(request)))
         self.conn_socket.close()
         pass
         

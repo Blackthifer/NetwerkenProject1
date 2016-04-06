@@ -51,7 +51,7 @@ class Message(object):
         """
         message = self.startline + "\r\n"
         for name in self.headerdict.keys():
-            message = message + name + ": " + self.headerdict[name] + "\r\n"
+            message = message + name + " " + self.headerdict[name] + "\r\n"
         message = message + "\r\n" + self.body
         return message
 
@@ -100,7 +100,7 @@ class Response(Message):
 
     def __init__(self):
         """Initialize the Response"""
-        super(Response, self).__init__()
+        super(Response, self).__init__("")
         self.code = 500
     
     def __str__(self):
@@ -109,5 +109,5 @@ class Response(Message):
         Returns:
             str: representation the can be sent over socket
         """
-        self.startline = ""                                      
+        self.startline = str(self.code) + " " #+ reasondict[self.code]
         return super(Response, self).__str__()
