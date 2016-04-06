@@ -59,7 +59,34 @@ class TestGetRequests(unittest.TestCase):
         """GET for an existing single resource followed by a GET for that same
         resource with caching utilized on the client/tester side
         """
-        pass
+        # Send the request
+        request1 = webhttp.message.Request()
+        request.method = "GET"
+        request.uri = "/test/index.html"
+        request.set_header("Host", "localhost:{}".format(portnr),
+         "Cache-control: no-cache")
+        request.set_header("Connection", "close")
+        self.client_socket.send(str(request))
+
+        # Test response
+        message1 = self.client_socket.recv(1024)
+        response1 = self.parser.parse_response(message)
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.body)
+        
+        # Send the second request
+        request2 = webhttp.message.Request()
+        request.set_header("Host", "localhost:{}".format(portnr),
+         "Cache-control: max-stale")
+        request.set_header("Connection", "close")
+        self.client_socket.send(str(request))
+
+        # Test second response
+        message2 = self.client_socket.recv(1024)
+        response2 = self.parser.parse_response(message)
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.body)
+        #self.assertEqual(response1.) #TODO
 
     def test_extisting_index_file(self):
         """GET for a directory with an existing index.html file"""
