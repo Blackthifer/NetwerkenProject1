@@ -4,6 +4,7 @@ This module contains a HTTP server
 """
 import sys
 import threading
+import webhttp.parser
 from socket import *
 
 
@@ -31,7 +32,10 @@ class ConnectionHandler(threading.Thread):
         print "Client address: ", self.conn_socket.getpeername()
         print "Client message: ", message
         sys.stdout.flush()
-        self.conn_socket.send("Hello Hessel & Frank!")
+        reqParser = webhttp.parser.RequestParser()
+        requests = reqParser.parse_requests(message)
+        for request in requests:
+            self.conn_socket.send(str(request))
         self.conn_socket.close()
         pass
         

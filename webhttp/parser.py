@@ -28,15 +28,19 @@ class RequestParser:
         http_requests = []
         for request in requests:
             #If not GET -> response code 400: bad request
-            lines = request.split('\r\n')
-            lines = filter(None, lines)
-            startLine = lines[0]
+            requestSplit = request.split('\r\n\r\n')
+            headers = requestSplit[0].split('\r\n')
+            messageBody = requestSplit[1]
+            startLine = headers[0]
             print startLine
             parts = startLine.split(' ')
             print parts[0], ", ", parts[1]
-            if not parts[0].compare("GET"):
+            if not parts[0] == "GET":
                 print "Not a GET request"
-            http_request = webhttp.message.Request(parts[0], parts[1])
+            http_request = webhttp.message.Request(parts[0], parts[1], messageBody)
+            #for header in headers:
+                #headerPair = header.split(': ')
+                #http_request.set_header(headerPair[0],headerPair[1])
             http_requests.append(http_request)
         
         sys.stdout.flush()
