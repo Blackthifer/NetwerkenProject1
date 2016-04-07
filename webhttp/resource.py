@@ -37,7 +37,6 @@ class Resource:
         self.uri = uri
         out = urlparse.urlparse(uri)
         self.path = os.path.join("content/", out.path.lstrip("/"))
-        print self.path
         if os.path.isdir(self.path):
             self.path = os.path.join(self.path, "index.html")
         if not os.path.isfile(self.path):

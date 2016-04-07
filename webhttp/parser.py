@@ -36,9 +36,7 @@ class RequestParser:
                 headers = headerSplit[1].split('\r\n')
             else:
                 headers = []
-            print startLine
             parts = startLine.split(' ')
-            print parts[0], ", ", parts[1]
             http_request = webhttp.message.Request(parts[0], parts[1])
             for header in headers:
                 headerPair = header.split(': ',1)
