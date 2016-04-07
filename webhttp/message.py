@@ -9,9 +9,9 @@ reasondict = {
     200 : "OK",
     304 : "Not Modified",
     400 : "Bad Request",
+    401 : "Unauthorised",
     404 : "Not Found",
     406 : "Not Acceptable",
-    410 : "Gone",
     500 : "Internal Server Error"
 }
 

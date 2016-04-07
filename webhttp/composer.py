@@ -33,13 +33,26 @@ class ResponseComposer:
         if not request.method == "GET":
             response.code = 400
         else:
-            response.code = 200
-            resource = webhttp.resource.Resource(request.uri)
-            response.set_header("Content-Length", str(resource.get_content_length()))
+            try:
+				response.code = 200
+				resource = webhttp.resource.Resource(request.uri)
+				response.set_header("Content-Length", str(resource.get_content_length()))
+				response.set_header("Content-Type", resource.get_content_type())
+				newETag = resource.generate_etag()
+				response.set_header("ETag", newETag)
+				response.body = resource.get_content()
+				print "Net voor hiero:" + repr(request.headerdict.keys())
+				if (request.headerdict.has_key("If-None-Match")) \
+				and (newETag == request.get_header("If-None-Match")):
+					response.code = 304
+					response.body = ""
+					print "Yo, hiero:" + repr(response)
+            except webhttp.resource.FileExistError:
+				response.code = 404
+            except webhttp.resource.FileAccessError:
+				response.code = 401
+				
             response.set_header("Connection", "close")
-            response.set_header("Content-Type", resource.get_content_type())
-            response.body = resource.get_content()
-            print "Test " + response.body
         return response
     
     def make_date_string(self):

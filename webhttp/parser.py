@@ -27,7 +27,6 @@ class RequestParser:
         
         http_requests = []
         for request in requests:
-            #If not GET -> response code 400: bad request
             requestSplit = request.split('\r\n\r\n')
             headerSplit = requestSplit[0].split('\r\n', 1)
             messageBody = requestSplit[1]
@@ -43,8 +42,6 @@ class RequestParser:
                 http_request.set_header(headerPair[0],headerPair[1])
             http_request.body = messageBody
             http_requests.append(http_request)
-        
-        sys.stdout.flush()
         return http_requests
 
     def split_requests(self, buff):
@@ -77,17 +74,24 @@ class ResponseParser:
 
         Returns:
             webhttp.message.Response
-        """
+        """      
         response = webhttp.message.Response()
         responseSplit = buff.split('\r\n\r\n')
         headerSplit = responseSplit[0].split('\r\n', 1)
-        messageBody = responseSplit[1]
+        if len(responseSplit) > 1:
+            messageBody = responseSplit[1]
+        else:
+            messageBody = ""
         startLine = headerSplit[0]
-        headers = headerSplit[1]
+        if len(headerSplit) > 1:
+            headers = headerSplit[1].split('\r\n')
+        else:
+            headers = []
         parts = startLine.split(' ')
-        response.code = parts[1]
+        response.code = int(parts[1])
         for header in headers:
-            headerPair = header.split(' ', 1)
-            response.set_header(headerPair[0], headerPair[1])
+            headerPair = header.split(': ',1)
+            response.set_header(headerPair[0],headerPair[1])
         response.body = messageBody
         return response
+

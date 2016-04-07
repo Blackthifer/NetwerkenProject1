@@ -26,7 +26,7 @@ class TestGetRequests(unittest.TestCase):
     def test_existing_file(self):
         """GET for a single resource that exists"""
         # Send the request
-        request = webhttp.message.Request()
+        request = webhttp.message.Request("","")
         request.method = "GET"
         request.uri = "/test/index.html"
         request.set_header("Host", "localhost:{}".format(portnr))
@@ -42,7 +42,7 @@ class TestGetRequests(unittest.TestCase):
     def test_nonexistant_file(self):
         """GET for a single resource that does not exist"""
         # Send the request
-        request = webhttp.message.Request()
+        request = webhttp.message.Request("","")
         request.method = "GET"
         request.uri = "/forbiddenKnowledge/swordOfTruth.nope"
         request.set_header("Host", "localhost:{}".format(portnr))
@@ -60,39 +60,37 @@ class TestGetRequests(unittest.TestCase):
         resource with caching utilized on the client/tester side
         """
         # Send the request
-        request1 = webhttp.message.Request()
-        request.method = "GET"
-        request.uri = "/test/index.html"
-        request.set_header("Host", "localhost:{}".format(portnr),
-         "Cache-control: no-cache")
-        request.set_header("Connection", "close")
-        self.client_socket.send(str(request))
+        request1 = webhttp.message.Request("","")
+        request1.method = "GET"
+        request1.uri = "/test/index.html"
+        request1.set_header("Host", "localhost:{}".format(portnr))
+        request1.set_header("Connection", "close")
+        self.client_socket.send(str(request1))
 
         # Test response
         message1 = self.client_socket.recv(1024)
-        response1 = self.parser.parse_response(message)
-        # extract resource
-        self.assertEqual(response.code, 200)
-        self.assertTrue(response.body)
+        response1 = self.parser.parse_response(message1)
+        etag1 = response1.get_header("ETag")
+        self.assertEqual(response1.code, 200)
+        self.assertTrue(response1.body)
         
         # Send the second request
-        request2 = webhttp.message.Request()
-        request.set_header("Host", "localhost:{}".format(portnr),
-         "If-None-Match:" + )
-        request.set_header("Connection", "close")
-        self.client_socket.send(str(request))
+        request2 = webhttp.message.Request("","")
+        request2.set_header("Host", "localhost:{}".format(portnr))
+        request2.set_header("If-None-Match", etag1)
+        request2.set_header("Connection", "close")
+        self.client_socket.send(str(request2))
 
         # Test second response
         message2 = self.client_socket.recv(1024)
-        response2 = self.parser.parse_response(message)
-        self.assertEqual(response.code, 200)
-        self.assertTrue(response.body)
-        #self.assertEqual(response2.) 304 #TODO
-
+        response2 = self.parser.parse_response(message2)
+        self.assertEqual(response2.code, 304)
+        self.assertTrue(response2.body)
+        
     def test_extisting_index_file(self):
         """GET for a directory with an existing index.html file"""
         # Send the request
-        request = webhttp.message.Request()
+        request = webhttp.message.Request("","")
         request.method = "GET"
         request.uri = "/test/"
         request.set_header("Host", "localhost:{}".format(portnr))
@@ -108,7 +106,7 @@ class TestGetRequests(unittest.TestCase):
     def test_nonexistant_index_file(self):
         """GET for a directory with a non-existant index.html file"""
         # Send the request
-        request = webhttp.message.Request()
+        request = webhttp.message.Request("","")
         request.method = "GET"
         request.uri = "/testNOPE/"
         request.set_header("Host", "localhost:{}".format(portnr))

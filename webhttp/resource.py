@@ -50,8 +50,7 @@ class Resource:
         Returns:
             str: ETag for the resource
         """
-        stat = os.stat(self.path)
-        etag = hashlib.sha224(stat).hexdigest
+        etag = str(hashlib.sha224(self.get_content()).hexdigest)
         return etag
 
     def get_content(self):
