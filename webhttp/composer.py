@@ -29,10 +29,14 @@ class ResponseComposer:
 
         Returns:
             webhttp.message.Response: response to request
-
         """
         response = webhttp.message.Response()
-
+        #image/jpeg for .jpeg/.jpg files
+        #text/html or text/plain for .html?
+        if not request.method == "GET":
+            response.code = 400
+        else:
+            if 
         # Stub code
         response.code = 200
         response.set_header("Content-Length", "4")
