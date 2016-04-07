@@ -35,14 +35,13 @@ class ResponseComposer:
         #text/html or text/plain for .html?
         if not request.method == "GET":
             response.code = 400
-        else:
-            if 
-        # Stub code
-        response.code = 200
-        response.set_header("Content-Length", "4")
-        response.set_header("Connection", "close")
-        response.body = "Test"
-
+        else: 
+			response.code = 200
+			file = Resource(request.uri)
+			response.set_header("Content-Length", file.get_content_length)
+#	        response.set_header("Connection", "close")
+			response.body = file.get_content
+			print "Test" + file.get_content        
         return response
 
     def make_date_string(self):
