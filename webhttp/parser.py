@@ -38,10 +38,11 @@ class RequestParser:
             print parts[0], ", ", parts[1]
             if not parts[0] == "GET":
                 print "Not a GET request"
-            http_request = webhttp.message.Request(parts[0], parts[1], messageBody)
+            http_request = webhttp.message.Request(parts[0], parts[1])
             for header in headers:
                 headerPair = header.split(' ',1)
                 http_request.set_header(headerPair[0],headerPair[1])
+            http_request.body = messageBody
             http_requests.append(http_request)
         
         sys.stdout.flush()
@@ -76,7 +77,18 @@ class ResponseParser:
             buff (str): the buffer contents received from socket
 
         Returns:
-            webhttp.Response
+            webhttp.message.Response
         """
         response = webhttp.message.Response()
+        responseSplit = buff.split('\r\n\r\n')
+        headerSplit = responseSplit[0].split('\r\n', 1)
+        messageBody = responseSplit[1]
+        startLine = headerSplit[0]
+        headers = headerSplit[1]
+        parts = startLine.split(' ')
+        response.code = parts[1]
+        for header in headers:
+            headerPair = header.split(' ', 1)
+            response.set_header(headerPair[0], headerPair[1])
+        response.body = messageBody
         return response
