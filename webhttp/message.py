@@ -7,6 +7,7 @@ reasondict = {
     # Dictionary for code reasons
     # Format: code : "Reason"
     304 : "Not Modified"
+	401 : "Unauthorized"
     404 : "Not Found"
     406 : "Not Acceptable"
     410 : "Gone"
