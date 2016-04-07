@@ -29,8 +29,6 @@ class ConnectionHandler(threading.Thread):
     def handle_connection(self):
         """Handle a new connection"""
         message = self.conn_socket.recv(1024)
-        print "Server address: ", self.conn_socket.getsockname()
-        print "Client address: ", self.conn_socket.getpeername()
         print "Client message: ", message
         sys.stdout.flush()
         reqParser = webhttp.parser.RequestParser()
