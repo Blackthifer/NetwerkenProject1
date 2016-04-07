@@ -32,13 +32,16 @@ class RequestParser:
             headerSplit = requestSplit[0].split('\r\n', 1)
             messageBody = requestSplit[1]
             startLine = headerSplit[0]
-            headers = headerSplit[1].split('\r\n')
+            if len(headerSplit) > 1:
+                headers = headerSplit[1].split('\r\n')
+            else:
+                headers = []
             print startLine
             parts = startLine.split(' ')
             print parts[0], ", ", parts[1]
             http_request = webhttp.message.Request(parts[0], parts[1])
             for header in headers:
-                headerPair = header.split('\: ',1)
+                headerPair = header.split(': ',1)
                 http_request.set_header(headerPair[0],headerPair[1])
             http_request.body = messageBody
             http_requests.append(http_request)

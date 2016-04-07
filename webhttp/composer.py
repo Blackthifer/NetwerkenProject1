@@ -5,7 +5,6 @@ HTTP requests from a client.
 """
 
 import time
-
 import webhttp.message
 import webhttp.resource
 
@@ -35,13 +34,13 @@ class ResponseComposer:
         #text/html or text/plain for .html?
         if not request.method == "GET":
             response.code = 400
-        else: 
-			response.code = 200
-			file = webhttp.resource.Resource(request.uri)
-			response.set_header("Content-Length", file.get_content_length)
+        else:
+		response.code = 200
+		resource = webhttp.resource.Resource(request.uri)
+		response.set_header("Content-Length", str(resource.get_content_length()))
 #	        response.set_header("Connection", "close")
-			response.body = file.get_content
-			print "Test" + file.get_content        
+		response.body = resource.get_content()
+		print "Test " + response.body        
         return response
 
     def make_date_string(self):
