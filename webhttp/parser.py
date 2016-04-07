@@ -36,8 +36,6 @@ class RequestParser:
             print startLine
             parts = startLine.split(' ')
             print parts[0], ", ", parts[1]
-            if not parts[0] == "GET":
-                print "Not a GET request"
             http_request = webhttp.message.Request(parts[0], parts[1])
             for header in headers:
                 headerPair = header.split(' ',1)
