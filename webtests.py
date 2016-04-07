@@ -41,21 +41,84 @@ class TestGetRequests(unittest.TestCase):
 
     def test_nonexistant_file(self):
         """GET for a single resource that does not exist"""
-        pass
+        # Send the request
+        request = webhttp.message.Request()
+        request.method = "GET"
+        request.uri = "/forbiddenKnowledge/swordOfTruth.nope"
+        request.set_header("Host", "localhost:{}".format(portnr))
+        request.set_header("Connection", "close")
+        self.client_socket.send(str(request))
+
+        # Test response
+        message = self.client_socket.recv(1024)
+        response = self.parser.parse_response(message)
+        self.assertEqual(response.code, 404)
+        self.assertTrue(response.body)
 
     def test_caching(self):
         """GET for an existing single resource followed by a GET for that same
         resource with caching utilized on the client/tester side
         """
-        pass
+        # Send the request
+        request1 = webhttp.message.Request()
+        request.method = "GET"
+        request.uri = "/test/index.html"
+        request.set_header("Host", "localhost:{}".format(portnr),
+         "Cache-control: no-cache")
+        request.set_header("Connection", "close")
+        self.client_socket.send(str(request))
+
+        # Test response
+        message1 = self.client_socket.recv(1024)
+        response1 = self.parser.parse_response(message)
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.body)
+        
+        # Send the second request
+        request2 = webhttp.message.Request()
+        request.set_header("Host", "localhost:{}".format(portnr),
+         "Cache-control: max-stale")
+        request.set_header("Connection", "close")
+        self.client_socket.send(str(request))
+
+        # Test second response
+        message2 = self.client_socket.recv(1024)
+        response2 = self.parser.parse_response(message)
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.body)
+        #self.assertEqual(response1.) #TODO
 
     def test_extisting_index_file(self):
         """GET for a directory with an existing index.html file"""
-        pass
+        # Send the request
+        request = webhttp.message.Request()
+        request.method = "GET"
+        request.uri = "/test/"
+        request.set_header("Host", "localhost:{}".format(portnr))
+        request.set_header("Connection", "close")
+        self.client_socket.send(str(request))
+
+        # Test response
+        message = self.client_socket.recv(1024)
+        response = self.parser.parse_response(message)
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.body)
 
     def test_nonexistant_index_file(self):
         """GET for a directory with a non-existant index.html file"""
-        pass
+        # Send the request
+        request = webhttp.message.Request()
+        request.method = "GET"
+        request.uri = "/testNOPE/"
+        request.set_header("Host", "localhost:{}".format(portnr))
+        request.set_header("Connection", "close")
+        self.client_socket.send(str(request))
+
+        # Test response
+        message = self.client_socket.recv(1024)
+        response = self.parser.parse_response(message)
+        self.assertEqual(response.code, 404)
+        self.assertTrue(response.body)
 
     def test_persistent_close(self):
         """Multiple GETs over the same (persistent) connection with the last
@@ -71,7 +134,7 @@ class TestGetRequests(unittest.TestCase):
         pass
 
     def test_encoding(self):
-        """GET which requests an existing resource using gzip encodign, which
+        """GET which requests an existing resource using gzip encoding, which
         is accepted by the server.
         """
         pass
