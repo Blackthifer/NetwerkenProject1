@@ -6,16 +6,19 @@ This module contains a handler class for resources.
 import os
 import mimetypes
 import urlparse
+import hashlib
 
 
 class FileExistError(Exception):
     """Exception which is raised when file does not exist"""
-    pass
-
+    def __str__(self):
+		return message.reasondict[404]
+    
 
 class FileAccessError(Exception):
     """Exception which is raised when file exists, but cannot be accessed"""
-    pass
+    def __str__(self):
+		return message.reasondict[401]
 
 
 class Resource:
@@ -48,7 +51,7 @@ class Resource:
             str: ETag for the resource
         """
         stat = os.stat(self.path)
-        etag = ""
+        etag = hashlib.sha224(stat).hexdigest
         return etag
 
     def get_content(self):

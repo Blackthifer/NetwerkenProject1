@@ -71,13 +71,14 @@ class TestGetRequests(unittest.TestCase):
         # Test response
         message1 = self.client_socket.recv(1024)
         response1 = self.parser.parse_response(message)
+        # extract resource
         self.assertEqual(response.code, 200)
         self.assertTrue(response.body)
         
         # Send the second request
         request2 = webhttp.message.Request()
         request.set_header("Host", "localhost:{}".format(portnr),
-         "Cache-control: max-stale")
+         "If-None-Match:" + )
         request.set_header("Connection", "close")
         self.client_socket.send(str(request))
 
@@ -86,7 +87,7 @@ class TestGetRequests(unittest.TestCase):
         response2 = self.parser.parse_response(message)
         self.assertEqual(response.code, 200)
         self.assertTrue(response.body)
-        #self.assertEqual(response1.) #TODO
+        #self.assertEqual(response2.) 304 #TODO
 
     def test_extisting_index_file(self):
         """GET for a directory with an existing index.html file"""
