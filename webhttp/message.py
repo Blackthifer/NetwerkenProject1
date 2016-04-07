@@ -57,7 +57,7 @@ class Message(object):
         """
         message = self.startline + "\r\n"
         for name in self.headerdict.keys():
-            message = message + name + " " + self.headerdict[name] + "\r\n"
+            message = message + name + ": " + self.headerdict[name] + "\r\n"
         message = message + "\r\n" + self.body
         return message
 

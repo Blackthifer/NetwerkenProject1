@@ -37,7 +37,7 @@ class ResponseComposer:
             response.code = 400
         else: 
 			response.code = 200
-			file = Resource(request.uri)
+			file = webhttp.resource.Resource(request.uri)
 			response.set_header("Content-Length", file.get_content_length)
 #	        response.set_header("Connection", "close")
 			response.body = file.get_content

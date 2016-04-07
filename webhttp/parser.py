@@ -38,7 +38,7 @@ class RequestParser:
             print parts[0], ", ", parts[1]
             http_request = webhttp.message.Request(parts[0], parts[1])
             for header in headers:
-                headerPair = header.split(' ',1)
+                headerPair = header.split('\: ',1)
                 http_request.set_header(headerPair[0],headerPair[1])
             http_request.body = messageBody
             http_requests.append(http_request)
