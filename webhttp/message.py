@@ -6,11 +6,18 @@ This modules contains classes for representing HTTP responses and requests.
 reasondict = {
     # Dictionary for code reasons
     # Format: code : "Reason"
+<<<<<<< HEAD
+    200 : "OK",
+    304 : "Not Modified",
+    404 : "Not Found",
+    406 : "Not Acceptable",
+=======
     304 : "Not Modified"
 	401 : "Unauthorized"
     404 : "Not Found"
     406 : "Not Acceptable"
     410 : "Gone"
+>>>>>>> origin/master
     500 : "Internal Server Error"
 }
 
@@ -18,11 +25,11 @@ reasondict = {
 class Message(object):
     """Class that stores a HTTP Message"""
 
-    def __init__(self, body):
+    def __init__(self):
         """Initialize the Message"""
         self.version = "HTTP/1.1"
         self.startline = ""
-        self.body = body
+        self.body = ""
         self.headerdict = dict()
         
     def set_header(self, name, value):
@@ -64,31 +71,11 @@ class Message(object):
 class Request(Message):
     """Class that stores a HTTP request"""
 
-    def __init__(self, method, uri, body):
+    def __init__(self, method, uri):
         """Initialize the Request"""
-        super(Request, self).__init__(body)
+        super(Request, self).__init__()
         self.method = method
         self.uri = uri
-        
-    def set_header(self, name, value):
-        """Add a header and its value
-        
-        Args:
-            name (str): name of header
-            value (str): value of header
-        """
-        super(Request, self).set_header(name, value)
-        
-    def get_header(self, name):
-        """Get the value of a header
-        
-        Args:
-            name (str): name of header
-
-        Returns:
-            str: value of header, empty if header does not exist
-        """
-        return super(Request, self).get_header(name)
         
     def __str__(self):
         """Convert the Request to a string
@@ -105,7 +92,7 @@ class Response(Message):
 
     def __init__(self):
         """Initialize the Response"""
-        super(Response, self).__init__("")
+        super(Response, self).__init__()
         self.code = 500
     
     def __str__(self):
@@ -114,5 +101,5 @@ class Response(Message):
         Returns:
             str: representation the can be sent over socket
         """
-        self.startline = str(self.code) + " " #+ reasondict[self.code]
+        self.startline = self.version + " " + str(self.code) + " " + reasondict[self.code]
         return super(Response, self).__str__()

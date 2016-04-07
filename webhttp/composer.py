@@ -28,7 +28,7 @@ class ResponseComposer:
             request (webhttp.Request): request from client
 
         Returns:
-            webhttp.Response: response to request
+            webhttp.message.Response: response to request
 
         """
         response = webhttp.message.Response()
