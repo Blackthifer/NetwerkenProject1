@@ -53,7 +53,7 @@ class TestGetRequests(unittest.TestCase):
         message = self.client_socket.recv(1024)
         response = self.parser.parse_response(message)
         self.assertEqual(response.code, 404)
-        self.assertTrue(response.body)
+        self.assertTrue(not response.body)
 
     def test_caching(self):
         """GET for an existing single resource followed by a GET for that same
@@ -75,19 +75,26 @@ class TestGetRequests(unittest.TestCase):
         self.assertTrue(response1.body)
         
         # Send the second request
+        # Need to create a new socket because of non-persistant connections
+        new_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        new_socket.connect(("localhost",portnr))
         request2 = webhttp.message.Request("","")
+        request2.method = "GET"
+        request2.uri = "/test/index.html"
         request2.set_header("Host", "localhost:{}".format(portnr))
         request2.set_header("If-None-Match", etag1)
         request2.set_header("Connection", "close")
-        self.client_socket.send(str(request2))
+        new_socket.send(str(request2))
 
         # Test second response
-        message2 = self.client_socket.recv(1024)
+        message2 = new_socket.recv(1024)
         response2 = self.parser.parse_response(message2)
         self.assertEqual(response2.code, 304)
-        self.assertTrue(response2.body)
+        self.assertTrue(not response2.body)
+        new_socket.shutdown(socket.SHUT_RDWR)
+        new_socket.close()
         
-    def test_extisting_index_file(self):
+    def test_existing_index_file(self):
         """GET for a directory with an existing index.html file"""
         # Send the request
         request = webhttp.message.Request("","")
@@ -117,7 +124,7 @@ class TestGetRequests(unittest.TestCase):
         message = self.client_socket.recv(1024)
         response = self.parser.parse_response(message)
         self.assertEqual(response.code, 404)
-        self.assertTrue(response.body)
+        self.assertTrue(not response.body)
 
     def test_persistent_close(self):
         """Multiple GETs over the same (persistent) connection with the last

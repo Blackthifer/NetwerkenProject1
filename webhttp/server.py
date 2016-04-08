@@ -2,7 +2,6 @@
 
 This module contains a HTTP server
 """
-import sys
 import threading
 import webhttp.parser
 import webhttp.composer
@@ -30,14 +29,12 @@ class ConnectionHandler(threading.Thread):
         """Handle a new connection"""
         message = self.conn_socket.recv(1024)
         print "Client message: ", message
-        sys.stdout.flush()
         reqParser = webhttp.parser.RequestParser()
         resComposer = webhttp.composer.ResponseComposer(self.timeout)
         requests = reqParser.parse_requests(message)
         for request in requests:
             self.conn_socket.send(str(resComposer.compose_response(request)))
         self.conn_socket.close()
-        pass
         
     def run(self):
         """Run the thread of the connection handler"""

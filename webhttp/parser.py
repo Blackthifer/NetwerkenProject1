@@ -4,7 +4,6 @@ This module contains parses for HTTP response and HTTP requests.
 """
 
 import webhttp.message
-import sys
 
 
 class RequestParser:
