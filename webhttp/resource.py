@@ -8,6 +8,7 @@ import mimetypes
 import urlparse
 import hashlib
 import webhttp.message
+import gzip
 
 class FileExistError(Exception):
     """Exception which is raised when file does not exist"""
@@ -44,15 +45,6 @@ class Resource:
         if not os.access(self.path, os.R_OK):
             raise FileAccessError
 
-    def generate_etag(self):
-        """Generate the ETag for the resource
-
-        Returns:
-            str: ETag for the resource
-        """
-        etag = str(hashlib.sha224(self.get_content()).hexdigest)
-        return etag
-
     def get_content(self):
         """Get the contents of the resource
         
@@ -70,6 +62,25 @@ class Resource:
         mimetype = mimetypes.guess_type(self.path)
         return mimetype[0]
 
+    def get_content_length(self):
+        """Get the length of the resource
+
+        Returns:
+            int: length of resource in bytes
+        """
+        return os.path.getsize(self.path)
+    
+    # Caching
+    def generate_etag(self):
+        """Generate the ETag for the resource
+
+        Returns:
+            str: ETag for the resource
+        """
+        etag = str(hashlib.sha224(self.get_content()).hexdigest)
+        return etag
+
+	# Encoding
     def get_content_encoding(self):
         """Get the content encoding, i.e "gzip"
 
@@ -79,10 +90,18 @@ class Resource:
         mimetype = mimetypes.guess_type(self.path)
         return mimetype[1]
 
-    def get_content_length(self):
-        """Get the length of the resource
+    def gzip_content(self, content):
+        """Compress the content using gzip
 
         Returns:
-            int: length of resource in bytes
+            str: content encoded with gzip
         """
-        return os.path.getsize(self.path)
+        return gzip.compress(content)
+
+    def ungzip_content(self, content):
+        """Decompress gzip encoded content
+
+        Returns:
+            str: content decoded with gzip
+        """
+        return gzip.open(content)
