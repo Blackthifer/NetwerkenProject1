@@ -45,6 +45,7 @@ class ResponseComposer:
             response.code = 400
         else:
             try:
+<<<<<<< HEAD
                 response.code = 200
                 resource = webhttp.resource.Resource(request.uri)
                 response.set_header("Content-Length", str(resource.get_content_length()))
@@ -56,6 +57,26 @@ class ResponseComposer:
                 and (newETag == request.get_header("If-None-Match")):
                     response.code = 304
                     response.body = ""
+=======
+				response.code = 200
+				resource = webhttp.resource.Resource(request.uri)
+				response.set_header("Content-Length", str(resource.get_content_length()))
+				response.set_header("Content-Type", resource.get_content_type())
+				response.body = resource.get_content()
+				# Caching
+				newETag = resource.generate_etag()
+				response.set_header("ETag", newETag)
+				if (request.headerdict.has_key("If-None-Match")) \
+				and (newETag == request.get_header("If-None-Match")):
+					response.code = 304
+					response.body = ""
+				# Encoding
+				if (request.headerdict.has_key("Accept-Encoding")) \
+				and (gzip == request.get_header("Accept-Encoding")):
+					response.set_header("Content-Encoding", this.resource.get_content_encoding)
+					response.body = this.resource.gzip_encode(response.body)
+			# Exceptions
+>>>>>>> origin/master
             except webhttp.resource.FileExistError:
                 response.code = 404
             except webhttp.resource.FileAccessError:

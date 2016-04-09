@@ -92,5 +92,10 @@ class ResponseParser:
             headerPair = header.split(': ',1)
             response.set_header(headerPair[0],headerPair[1])
         response.body = messageBody
+		# Encoding
+        if (response.headerdict.has_key("Content-Encoding")) \
+		and ("gzip" == request.get_header("Content-Encoding")):
+			message = self.resource.ungzip_content(message)				
+
         return response
 
