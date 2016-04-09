@@ -29,11 +29,11 @@ class ConnectionHandler(threading.Thread):
     def handle_connection(self):
         """Handle a new connection"""
         close_conn = False
-        last_active = time.time()
+        last_active = time.localtime()
         while not close_conn:
             message = self.conn_socket.recv(1024)
             if message:
-                last_active = time.time()
+                last_active = time.localtime()
                 print "Client message: ", message
             reqParser = webhttp.parser.RequestParser()
             resComposer = webhttp.composer.ResponseComposer(self.timeout)
@@ -44,7 +44,7 @@ class ConnectionHandler(threading.Thread):
                 and request.get_header("Connection") == "close":
                     close_conn = True
                     break
-            if time.time() > last_active + self.timeout:
+            if time.localtime().tm_sec > (last_active.tm_sec + self.timeout) % 60:
                 close_conn = True
                 self.conn_socket.send(str(resComposer.timeout_message()))
         self.conn_socket.close()

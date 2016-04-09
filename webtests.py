@@ -2,12 +2,14 @@ import unittest
 import logging
 import socket
 import sys
+import time
 
 import webhttp.message
 import webhttp.parser
 
 
 portnr = 8001
+timeout = 15
 
 
 class TestGetRequests(unittest.TestCase):
@@ -132,8 +134,11 @@ class TestGetRequests(unittest.TestCase):
         request1.set_header("Host", "localhost:{}".format(portnr))
         request1.set_header("Connection", "keep alive")
         self.client_socket.send(str(request1))
+        self.client_socket.recv(1024)
         self.client_socket.send(str(request1))
+        self.client_socket.recv(1024)
         self.client_socket.send(str(request1))
+        self.client_socket.recv(1024)
         request2 = request1
         request2.set_header("Connection", "close")
         self.client_socket.send(str(request2))
@@ -146,6 +151,12 @@ class TestGetRequests(unittest.TestCase):
         wait during which the connection times out, the connection should be
         closed.
         """
+        message = self.client_socket.recv(1024)
+        while not message:
+            message = self.client_socket.recv(1024)
+        timeout_resp = self.parser.parse_response(message)
+        self.assertEqual(timeout_resp.code, 408)
+        self.assertEqual(timeout_resp.get_header("Connection"), "close")
         pass
 
     def test_encoding(self):
@@ -175,7 +186,7 @@ class TestGetRequests(unittest.TestCase):
         new_socket.send(str(request2))
 
         # Parse the gzip response
-        message2 = self.new_socSket.recv(1024)
+        message2 = new_socket.recv(1024)
         log.debug("message2: " + message2)
         response2 = self.parser.parse_response(message2)
         self.assertEqual(response2.code, 200)
@@ -184,7 +195,7 @@ class TestGetRequests(unittest.TestCase):
         
         # Compare normal and gzip responses
         self.assertTrue(len(message1) < len(message2))
-        self.assertEqual(respons1.body, respons2.body)
+        self.assertEqual(response1.body, response2.body)
 
 
 if __name__ == "__main__":
