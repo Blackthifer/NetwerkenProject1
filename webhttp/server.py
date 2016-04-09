@@ -28,7 +28,6 @@ class ConnectionHandler(threading.Thread):
     def handle_connection(self):
         """Handle a new connection"""
         message = self.conn_socket.recv(1024)
-        print "Client message: ", message
         reqParser = webhttp.parser.RequestParser()
         resComposer = webhttp.composer.ResponseComposer(self.timeout)
         requests = reqParser.parse_requests(message)

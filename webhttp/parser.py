@@ -4,7 +4,7 @@ This module contains parses for HTTP response and HTTP requests.
 """
 
 import webhttp.message
-
+import logging
 
 class RequestParser:
     """Class that parses a HTTP request"""
@@ -73,9 +73,11 @@ class ResponseParser:
 
         Returns:
             webhttp.message.Response
-        """      
+        """
+        log = logging.getLogger("parse_response")
         response = webhttp.message.Response()
         responseSplit = buff.split('\r\n\r\n')
+        log.debug("Buff:" + buff)
         headerSplit = responseSplit[0].split('\r\n', 1)
         if len(responseSplit) > 1:
             messageBody = responseSplit[1]
@@ -86,7 +88,9 @@ class ResponseParser:
             headers = headerSplit[1].split('\r\n')
         else:
             headers = []
+        log.debug("startLine:" + startLine)
         parts = startLine.split(' ')
+        log.debug("response.code:" + parts[1])
         response.code = int(parts[1])
         for header in headers:
             headerPair = header.split(': ',1)

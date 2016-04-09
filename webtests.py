@@ -1,4 +1,5 @@
 import unittest
+import logging
 import socket
 import sys
 
@@ -143,10 +144,47 @@ class TestGetRequests(unittest.TestCase):
         """GET which requests an existing resource using gzip encoding, which
         is accepted by the server.
         """
-        pass
+        log = logging.getLogger("test_encoding")
+        # Send the normal request
+        request1 = webhttp.message.Request("","")
+        request1.method = "GET"
+        request1.uri = "/"
+        request1.set_header("Host", "localhost:{}".format(portnr))
+        request1.set_header("Connection", "close")
+        self.client_socket.send(str(request1))
+        
+        # Parse the normal response
+        message1 = self.client_socket.recv(1024)
+        response1 = self.parser.parse_response(message1)
+        self.assertEqual(response1.code, 200)
+        
+        # Send the gzip-request        
+        # Need to create a new socket because of non-persistant connections
+        new_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        new_socket.connect(("localhost",portnr))
+        request2 = request1
+        request2.set_header("Accept-Encoding", "gzip")
+        new_socket.send(str(request2))
+
+        # Parse the gzip response
+        message2 = self.new_socSket.recv(1024)
+        log.debug("message2: " + message2)
+        response2 = self.parser.parse_response(message2)
+        self.assertEqual(response2.code, 200)
+        new_socket.shutdown(socket.SHUT_RDWR)
+        new_socket.close()
+        
+        # Compare normal and gzip responses
+        self.assertTrue(len(message1) < len(message2))
+        self.assertEqual(respons1.body, respons2.body)
 
 
 if __name__ == "__main__":
+	# Logging utility
+    logging.basicConfig(stream = sys.stderr)
+    logging.getLogger("test_encoding").setLevel(logging.DEBUG)
+    #logging.getLogger("parse_response").setLevel(logging.DEBUG)
+    
     # Parse command line arguments
     import argparse
     parser = argparse.ArgumentParser(description="HTTP Tests")
