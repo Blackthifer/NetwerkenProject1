@@ -2,6 +2,7 @@
 
 This module contains a HTTP server
 """
+import time
 import threading
 import webhttp.parser
 import webhttp.composer
@@ -27,13 +28,25 @@ class ConnectionHandler(threading.Thread):
     
     def handle_connection(self):
         """Handle a new connection"""
-        message = self.conn_socket.recv(1024)
-        print "Client message: ", message
-        reqParser = webhttp.parser.RequestParser()
-        resComposer = webhttp.composer.ResponseComposer(self.timeout)
-        requests = reqParser.parse_requests(message)
-        for request in requests:
-            self.conn_socket.send(str(resComposer.compose_response(request)))
+        close_conn = False
+        last_active = time.time()
+        while not close_conn:
+            message = self.conn_socket.recv(1024)
+            if message:
+                last_active = time.time()
+                print "Client message: ", message
+            reqParser = webhttp.parser.RequestParser()
+            resComposer = webhttp.composer.ResponseComposer(self.timeout)
+            requests = reqParser.parse_requests(message)
+            for request in requests:
+                self.conn_socket.send(str(resComposer.compose_response(request)))
+                if request.headerdict.has_key("Connection") \
+                and request.get_header("Connection") == "close":
+                    close_conn = True
+                    break
+            if time.time() > last_active + self.timeout:
+                close_conn = True
+                self.conn_socket.send(str(resComposer.timeout_message()))
         self.conn_socket.close()
         
     def run(self):
@@ -66,7 +79,6 @@ class Server:
             (connSocket, address) = webSocket.accept()
             connHandler = ConnectionHandler(connSocket,address,self.timeout)
             connHandler.run()
-            pass
     
     def shutdown(self):
         """Safely shut down the HTTP server"""

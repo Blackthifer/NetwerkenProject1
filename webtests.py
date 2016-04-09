@@ -64,7 +64,7 @@ class TestGetRequests(unittest.TestCase):
         request1.method = "GET"
         request1.uri = "/test/index.html"
         request1.set_header("Host", "localhost:{}".format(portnr))
-        request1.set_header("Connection", "close")
+        request1.set_header("Connection", "keep alive")
         self.client_socket.send(str(request1))
 
         # Test response
@@ -75,24 +75,19 @@ class TestGetRequests(unittest.TestCase):
         self.assertTrue(response1.body)
         
         # Send the second request
-        # Need to create a new socket because of non-persistant connections
-        new_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        new_socket.connect(("localhost",portnr))
         request2 = webhttp.message.Request("","")
         request2.method = "GET"
         request2.uri = "/test/index.html"
         request2.set_header("Host", "localhost:{}".format(portnr))
         request2.set_header("If-None-Match", etag1)
         request2.set_header("Connection", "close")
-        new_socket.send(str(request2))
+        self.client_socket.send(str(request2))
 
         # Test second response
-        message2 = new_socket.recv(1024)
+        message2 = self.client_socket.recv(1024)
         response2 = self.parser.parse_response(message2)
         self.assertEqual(response2.code, 304)
         self.assertTrue(not response2.body)
-        new_socket.shutdown(socket.SHUT_RDWR)
-        new_socket.close()
         
     def test_existing_index_file(self):
         """GET for a directory with an existing index.html file"""
