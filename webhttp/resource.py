@@ -9,6 +9,7 @@ import urlparse
 import hashlib
 import webhttp.message
 import gzip
+import StringIO
 
 class FileExistError(Exception):
     """Exception which is raised when file does not exist"""
@@ -96,7 +97,12 @@ class Resource:
         Returns:
             str: content encoded with gzip
         """
-        return gzip.compress(content)
+        out = StringIO.StringIO()
+        with gzip.GzipFile(fileobj=out, mode="w") as f:
+          f.write(content)
+          out.getvalue()
+        compressed_binairy = gzip.compress(out.getvalue())
+        return compressed_binairy
 
     def ungzip_content(self, content):
         """Decompress gzip encoded content
@@ -104,4 +110,6 @@ class Resource:
         Returns:
             str: content decoded with gzip
         """
-        return gzip.open(content)
+        decompressed_binairy = gzip.open(content)
+        
+        return 
