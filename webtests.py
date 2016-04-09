@@ -186,24 +186,16 @@ class TestGetRequests(unittest.TestCase):
         self.client_socket.send(str(request2))
 
         # Parse the gzip response
-<<<<<<< HEAD
-        message2 = new_socket.recv(1024)
-=======
-        message2 = self.client_socSket.recv(1024)
->>>>>>> origin/master
+        message2 = self.client_socket.recv(1024)
         log.debug("message2: " + message2)
         response2 = self.parser.parse_response(message2)
         self.assertEqual(response2.code, 200)
-        client_socket.shutdown(socket.SHUT_RDWR)
-        client_socket.close()
+        self.client_socket.shutdown(socket.SHUT_RDWR)
+        self.client_socket.close()
         
         # Compare normal and gzip responses
         self.assertTrue(len(message1) < len(message2))
-<<<<<<< HEAD
         self.assertEqual(response1.body, response2.body)
-
-=======
-        self.assertEqual(respons1.body, respons2.body)
 '''
 >>>>>>> origin/master
 
