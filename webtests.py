@@ -126,7 +126,20 @@ class TestGetRequests(unittest.TestCase):
         """Multiple GETs over the same (persistent) connection with the last
         GET prompting closing the connection, the connection should be closed.
         """
-        pass
+        request1 = webhttp.message.Request("","")
+        request1.method = "GET"
+        request1.uri = "test/index.html"
+        request1.set_header("Host", "localhost:{}".format(portnr))
+        request1.set_header("Connection", "keep alive")
+        self.client_socket.send(str(request1))
+        self.client_socket.send(str(request1))
+        self.client_socket.send(str(request1))
+        request2 = request1
+        request2.set_header("Connection", "close")
+        self.client_socket.send(str(request2))
+        message = self.client_socket.recv(1024)
+        response = self.parser.parse_response(message)
+        self.assertEqual(response.get_header("Connection"), "close")
 
     def test_persistent_timeout(self):
         """Multiple GETs over the same (persistent) connection, followed by a
