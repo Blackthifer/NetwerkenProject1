@@ -28,14 +28,6 @@ class ConnectionHandler(threading.Thread):
     
     def handle_connection(self):
         """Handle a new connection"""
-<<<<<<< HEAD
-        message = self.conn_socket.recv(1024)
-        reqParser = webhttp.parser.RequestParser()
-        resComposer = webhttp.composer.ResponseComposer(self.timeout)
-        requests = reqParser.parse_requests(message)
-        for request in requests:
-            self.conn_socket.send(str(resComposer.compose_response(request)))
-=======
         close_conn = False
         last_active = time.time()
         while not close_conn:
@@ -55,7 +47,6 @@ class ConnectionHandler(threading.Thread):
             if time.time() > last_active + self.timeout:
                 close_conn = True
                 self.conn_socket.send(str(resComposer.timeout_message()))
->>>>>>> 70230fde6346a60eadaebfcf2d271e07af640d3f
         self.conn_socket.close()
         
     def run(self):
