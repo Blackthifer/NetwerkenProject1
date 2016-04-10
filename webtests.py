@@ -161,17 +161,17 @@ class TestGetRequests(unittest.TestCase):
         self.client_socket.recv(1024)
         self.client_socket.send(str(request2))
         self.client_socket.recv(1024)
-        time.sleep(15)
+        time.sleep(timeout)
         message = self.client_socket.recv(1024)
         timeout_resp = self.parser.parse_response(message)
         self.assertEqual(timeout_resp.code, 408)
         self.assertEqual(timeout_resp.get_header("Connection"), "close")
 
-#    def test_encoding(self):
+    def test_encoding(self):
         """GET which requests an existing resource using gzip encoding, which
         is accepted by the server.
         """
-'''        log = logging.getLogger("test_encoding")
+        log = logging.getLogger("test_encoding")
         # Send the request
         request1 = webhttp.message.Request("","")
         request1.method = "GET"
@@ -204,7 +204,7 @@ class TestGetRequests(unittest.TestCase):
         # Compare normal and gzip responses
         self.assertTrue(len(message1) < len(message2))
         self.assertEqual(response1.body, response2.body)
-'''
+
 
 if __name__ == "__main__":
 	# Logging utility

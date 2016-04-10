@@ -3,11 +3,11 @@
 This module contains a HTTP server
 """
 import sys
-import time
 import threading
 import webhttp.parser
 import webhttp.composer
-from socket import *
+from socket import AF_INET, SOCK_STREAM
+import socket
 
 
 class ConnectionHandler(threading.Thread):
@@ -30,20 +30,17 @@ class ConnectionHandler(threading.Thread):
     def handle_connection(self):
         """Handle a new connection"""
         close_conn = False
-        last_active = time.localtime()
-        debug = last_active.tm_sec
+        self.conn_socket.settimeout(self.timeout)
         while not close_conn:
-            message = self.conn_socket.recv(1024)
-            if message:
-                last_active = time.localtime()
-                debug = last_active.tm_sec
-                print "Client message: ", message
-            if time.localtime().tm_sec > debug:
-                print time.localtime().tm_sec
-                debug = time.localtime().tm_sec
-            sys.stdout.flush()
             reqParser = webhttp.parser.RequestParser()
             resComposer = webhttp.composer.ResponseComposer(self.timeout)
+            try:
+                message = self.conn_socket.recv(1024)
+            except socket.timeout:
+                close_conn = True
+                self.conn_socket.send(str(resComposer.timeout_message()))
+            print "Client message: ", message
+            sys.stdout.flush()
             requests = reqParser.parse_requests(message)
             for request in requests:
                 self.conn_socket.send(str(resComposer.compose_response(request)))
@@ -51,9 +48,6 @@ class ConnectionHandler(threading.Thread):
                 and request.get_header("Connection") == "close":
                     close_conn = True
                     break
-            if time.localtime().tm_sec > (last_active.tm_sec + self.timeout) % 60:
-                close_conn = True
-                self.conn_socket.send(str(resComposer.timeout_message()))
         self.conn_socket.close()
         
     def run(self):
@@ -79,7 +73,7 @@ class Server:
     
     def run(self):
         """Run the HTTP Server and start listening"""
-        webSocket = socket(AF_INET,SOCK_STREAM)
+        webSocket = socket.socket(AF_INET,SOCK_STREAM)
         webSocket.bind(('',self.server_port))
         webSocket.listen(1)
         while not self.done:
