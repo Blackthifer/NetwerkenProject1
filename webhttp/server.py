@@ -2,6 +2,7 @@
 
 This module contains a HTTP server
 """
+import sys
 import time
 import threading
 import webhttp.parser
@@ -30,11 +31,17 @@ class ConnectionHandler(threading.Thread):
         """Handle a new connection"""
         close_conn = False
         last_active = time.localtime()
+        debug = last_active.tm_sec
         while not close_conn:
             message = self.conn_socket.recv(1024)
             if message:
                 last_active = time.localtime()
+                debug = last_active.tm_sec
                 print "Client message: ", message
+            if time.localtime().tm_sec > debug:
+                print time.localtime().tm_sec
+                debug = time.localtime().tm_sec
+            sys.stdout.flush()
             reqParser = webhttp.parser.RequestParser()
             resComposer = webhttp.composer.ResponseComposer(self.timeout)
             requests = reqParser.parse_requests(message)

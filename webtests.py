@@ -151,13 +151,21 @@ class TestGetRequests(unittest.TestCase):
         wait during which the connection times out, the connection should be
         closed.
         """
+        request1 = webhttp.message.Request("GET", "/")
+        request1.set_header("Host", "localhost:{}".format(portnr))
+        request1.set_header("Connection", "keep alive")
+        request2 = webhttp.message.Request("GET", "test/")
+        request2.set_header("Host", "localhost:{}".format(portnr))
+        request2.set_header("Connection", "keep alive")
+        self.client_socket.send(str(request1))
+        self.client_socket.recv(1024)
+        self.client_socket.send(str(request2))
+        self.client_socket.recv(1024)
+        time.sleep(15)
         message = self.client_socket.recv(1024)
-        while not message:
-            message = self.client_socket.recv(1024)
         timeout_resp = self.parser.parse_response(message)
         self.assertEqual(timeout_resp.code, 408)
         self.assertEqual(timeout_resp.get_header("Connection"), "close")
-        pass
 
 #    def test_encoding(self):
         """GET which requests an existing resource using gzip encoding, which
@@ -197,7 +205,6 @@ class TestGetRequests(unittest.TestCase):
         self.assertTrue(len(message1) < len(message2))
         self.assertEqual(response1.body, response2.body)
 '''
->>>>>>> origin/master
 
 if __name__ == "__main__":
 	# Logging utility

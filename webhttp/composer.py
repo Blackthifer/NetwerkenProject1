@@ -56,6 +56,10 @@ class ResponseComposer:
                 and newETag == request.get_header("If-None-Match"):
                     response.code = 304
                     response.body = ""
+                else:
+                    if request.headerdict.has_key("If-None-Match"):
+                        print newETag
+                        print request.get_header("If-None-Match")
                 # Encoding
                 if request.headerdict.has_key("Accept-Encoding"):
                     if "gzip" == request.get_header("Accept-Encoding"):
