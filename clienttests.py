@@ -31,7 +31,6 @@ parser = webhttp.parser.ResponseParser()
 """GET for an existing single resource followed by a GET for that same
 resource with caching utilized on the client/tester side
 """
-log = logging.getLogger("test_caching")
 # Send the request
 request1 = webhttp.message.Request("","")
 request1.method = "GET"
@@ -45,14 +44,13 @@ message1 = client_socket.recv(1024)
 print("message1 : " + message1)
 response1 = parser.parse_response(message1)
 etag1 = response1.get_header("ETag")
-log.debug("etag1 : " + etag1)
 
 # Send the second request
 request2 = webhttp.message.Request("","")
 request2.method = "GET"
 request2.uri = "/test/index.html"
 request2.set_header("Host", "localhost:{}".format(portnr))
-request2.set_header("Accept-Encoding", "gzip")
+request2.set_header("If-None-Match", etag1)
 request2.set_header("Connection", "close")
 client_socket.send(str(request2))
 
@@ -60,7 +58,6 @@ client_socket.send(str(request2))
 message2 = client_socket.recv(1024)
 print("message 2 : " + message2)
 response2 = parser.parse_response(message2)
-print(response2.body)
 
 
 client_socket.close()

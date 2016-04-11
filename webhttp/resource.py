@@ -78,7 +78,9 @@ class Resource:
         Returns:
             str: ETag for the resource
         """
-        etag = str(hashlib.sha224(self.get_content()))
+        h = hashlib.sha224()
+        h.update(self.get_content())
+        etag = h.hexdigest()
         return etag
 
 	# Encoding
