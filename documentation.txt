@@ -5,3 +5,39 @@ Frank Gerlings s4384873
 Documentation Project 1: Webserver
 ----------------------------------
 
+Control flow
+------------
+  Normal GET-request
+
+  Caching
+
+  
+
+Design Decisions
+----------------
+  Language
+We used python 2.7, due to the framework being written in this language.
+
+  Libraries
+In webtests.py we used the following libraries: unittest, logging, socket, sys and time. We use these to implement unittests (unittest and sys) and log them (logging). The socket library is used to send the HTTP requests and to get the responses. Lastely, time is used to keep track of the timeouts.
+In webserver.py, the argparse library is used to check for given parameters (for example a different portnumber).
+server.py uses the socket library to receive and send HTTP requests and responses. It also uses threading to create ConnectionHandlers. 
+The only external library used by composer.py is time, in order to handle 
+timeouts.
+Last but not least, we are going elaborate on the external libraries of recource.py. It uses os and urlparse to parse and find the resource. mimetypes is used to yield the Content-Encoding header. For the ETags, the hashlib library is used. For compression and decompression gzip and zlib are used respectively.
+
+  Concurrency
+We start new threads for each ConnectionHandler, so that we can handle multiple connections at once.
+  
+  Hashing
+For hashing, we used the SHA-224 hash. This has no particular reason, except for it having a small chance for collisions.
+  
+  Resource encoding
+
+
+Don't forget to document your implementation:
+-> language + external libraries used (if any)
+-> control flow with headers/status codes considered for each requirement (GET, persistent connections, ETag, encoding)
+-> concurrency, hashing, resource encoding
+-> challenges (if any)
+

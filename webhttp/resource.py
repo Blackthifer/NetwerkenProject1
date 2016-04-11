@@ -95,7 +95,7 @@ class Resource:
             str: content encoded with gzip
         """
         with open(self.path, "rb") as f_in, gzip.open(self.path + ".gz", "wb") as f_out:
-          f_out.writelines(f_in)
+            f_out.writelines(f_in)
         self.path = self.path + ".gz"
 
     def ungzip_content(self, compressed):
