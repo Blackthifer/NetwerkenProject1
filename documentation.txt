@@ -7,11 +7,18 @@ Documentation Project 1: Webserver
 
 Control flow
 ------------
-  Normal GET-request
+  GET
+We receive a GET-request. Next we parse it. We can now read the request. Should this contain any method other than GET, we send back 501: Not Implemented. Next, we look at the HTTP version. Is this not HTTP/1.1, we send back a 505: HTTP Version Not Supported. Then a resource is requested. If the requester hasn't got the rights for the resource, we send back a 401: Unauthorized. Then, if we can't find the resource, we send back a 404: Not Found. If we do find the resource, we send a 200: OK togheter with the resource.
 
-  Caching
+  ETag
+When the If-None-Match header is found and the ETag is correct, than we do not send the request resource, but a 304: Not Modified back. In case the ETag is incorrect, we send back the resource with a 200: OK.
 
-  
+  Persistent connections
+If the Connection header is found and it has "keep alive" as value and the connection timeout is reached we send a 408: Request Timeout. Otherwise, we continue normally.
+
+  Encoding
+If the Accept-Encoding header is found and "gzip" is in it, we send the requested file compressed with gzip with a 200: OK. If not, but "identity" is in the Accept-Encoding value, we send the uncompressed file with a 200: OK. Should neither of these strings be in the Accept-Encoding value, we send back a 406: Not Acceptable.
+
 
 Design Decisions
 ----------------
@@ -33,11 +40,17 @@ We start new threads for each ConnectionHandler, so that we can handle multiple 
 For hashing, we used the SHA-224 hash. This has no particular reason, except for it having a small chance for collisions.
   
   Resource encoding
+We used gzip for the resource encoding, since this was obligatory. Because gzip is unable to decode strings, we used zlib for that purpose.
 
+  Challenges
+    Persistence
+Was pretty difficult. But in time we found out how it worked.
+    Unittests
+Getting on with prints inside the unittests was somewhat tricky. But loggers fixed everything.
+    GIT
+We didn't create a .gitignore. Therefore we had to merge our .pyc files quite often. Our bad.
+    Python
+Firstly, we are not used to Python. Using different editors, one editor automaticaly created tabs as indents, while the other used spaces. Visually, this was exactly the same. However, Python started throwing false indentation errors.
+Also, there was a bug in one of the interpreters, iPython, that threw unicode decode errors, instead of actually giving the syntactical mistake.
 
-Don't forget to document your implementation:
--> language + external libraries used (if any)
--> control flow with headers/status codes considered for each requirement (GET, persistent connections, ETag, encoding)
--> concurrency, hashing, resource encoding
--> challenges (if any)
 
