@@ -7,20 +7,15 @@ import os
 import mimetypes
 import urlparse
 import hashlib
-import webhttp.message
 import gzip
 import zlib
 
 class FileExistError(Exception):
     """Exception which is raised when file does not exist"""
-    def __str__(self):
-		return webhttp.message.reasondict[404]
     
 
 class FileAccessError(Exception):
     """Exception which is raised when file exists, but cannot be accessed"""
-    def __str__(self):
-		return webhttp.message.reasondict[401]
 
 
 class Resource:

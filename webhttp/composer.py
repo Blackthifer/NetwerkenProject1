@@ -3,7 +3,6 @@
 This module contains a composer, which can compose responses to
 HTTP requests from a client.
 """
-import gzip
 import time
 import webhttp.message
 import webhttp.resource

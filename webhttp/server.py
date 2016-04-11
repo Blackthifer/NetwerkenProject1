@@ -2,7 +2,6 @@
 
 This module contains a HTTP server
 """
-import sys
 import threading
 import webhttp.parser
 import webhttp.composer
@@ -39,8 +38,6 @@ class ConnectionHandler(threading.Thread):
             except socket.timeout:
                 close_conn = True
                 self.conn_socket.send(str(resComposer.timeout_message()))
-            print "Client message: ", message
-            sys.stdout.flush()
             requests = reqParser.parse_requests(message)
             for request in requests:
                 self.conn_socket.send(str(resComposer.compose_response(request)))

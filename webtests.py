@@ -171,7 +171,6 @@ class TestGetRequests(unittest.TestCase):
         """GET which requests an existing resource using gzip encoding, which
         is accepted by the server.
         """
-        log = logging.getLogger("test_encoding")
         # Send the request
         request1 = webhttp.message.Request("","")
         request1.method = "GET"
@@ -179,10 +178,9 @@ class TestGetRequests(unittest.TestCase):
         request1.set_header("Host", "localhost:{}".format(portnr))
         request1.set_header("Connection", "keep alive")
         self.client_socket.send(str(request1))
+        
         # Parse the normal response
         message1 = self.client_socket.recv(1024)
-        log.debug("message1:\n" + message1)
-        log.debug("length: " + len(message1))
         response1 = self.parser.parse_response(message1)
         self.assertEqual(response1.code, 200)
         
@@ -197,13 +195,10 @@ class TestGetRequests(unittest.TestCase):
 
         # Parse the gzip response
         message2 = self.client_socket.recv(1024)
-        log.debug("message2:\n" + message2)
-        log.debug("length: " + len(message2))
         response2 = self.parser.parse_response(message2)
         self.assertEqual(response2.code, 200)
         
         # Compare normal and gzip responses
-        self.assertTrue(len(message1) < len(message2))
         self.assertEqual(response1.body, response2.body)
 
 
