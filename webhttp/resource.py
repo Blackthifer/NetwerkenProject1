@@ -9,7 +9,7 @@ import urlparse
 import hashlib
 import webhttp.message
 import gzip
-import StringIO
+import zlib
 
 class FileExistError(Exception):
     """Exception which is raised when file does not exist"""
@@ -91,25 +91,21 @@ class Resource:
         mimetype = mimetypes.guess_type(self.path)
         return mimetype[1]
 
-    def gzip_content(self, content):
+    def gzip_content(self):
         """Compress the content using gzip
 
         Returns:
             str: content encoded with gzip
         """
-        out = StringIO.StringIO()
-        with gzip.GzipFile(fileobj=out, mode="w") as f:
-          f.write(content)
-          out.getvalue()
-        compressed_binairy = gzip.compress(out.getvalue())
-        return compressed_binairy
+        with open(self.path, "rb") as f_in, gzip.open(self.path + ".gz", "wb") as f_out:
+          f_out.writelines(f_in)
+        self.path = self.path + ".gz"
 
-    def ungzip_content(self, content):
+    def ungzip_content(self, compressed):
         """Decompress gzip encoded content
 
         Returns:
             str: content decoded with gzip
         """
-        decompressed_binairy = gzip.open(content)
-        
-        return 
+        decompressed = zlib.decompress(compressed)
+        return decompressed

@@ -181,6 +181,8 @@ class TestGetRequests(unittest.TestCase):
         self.client_socket.send(str(request1))
         # Parse the normal response
         message1 = self.client_socket.recv(1024)
+        log.debug("message1:\n" + message1)
+        log.debug("length: " + len(message1))
         response1 = self.parser.parse_response(message1)
         self.assertEqual(response1.code, 200)
         
@@ -195,11 +197,10 @@ class TestGetRequests(unittest.TestCase):
 
         # Parse the gzip response
         message2 = self.client_socket.recv(1024)
-        log.debug("message2: " + message2)
+        log.debug("message2:\n" + message2)
+        log.debug("length: " + len(message2))
         response2 = self.parser.parse_response(message2)
         self.assertEqual(response2.code, 200)
-        self.client_socket.shutdown(socket.SHUT_RDWR)
-        self.client_socket.close()
         
         # Compare normal and gzip responses
         self.assertTrue(len(message1) < len(message2))
@@ -207,7 +208,7 @@ class TestGetRequests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-	# Logging utility
+    # Logging utility
     logging.basicConfig(stream = sys.stderr)
     #logging.getLogger("test_encoding").setLevel(logging.DEBUG)
     #logging.getLogger("parse_response").setLevel(logging.DEBUG)

@@ -62,11 +62,13 @@ class ResponseComposer:
                         print request.get_header("If-None-Match")
                 # Encoding
                 if request.headerdict.has_key("Accept-Encoding"):
-                    if "gzip" == request.get_header("Accept-Encoding"):
+                    if "gzip" in request.get_header("Accept-Encoding"):
+                        resource.gzip_content()
                         response.set_header("Content-Encoding", resource.get_content_encoding())
-                        response.body = resource.gzip_content(response.body)
+                        response.body = resource.get_content()
                     else:
-                        response.code = 406
+                        if "identity" not in request.get_header("Accept-Encoding"):
+                            response.code = 406
             # Exceptions
             except webhttp.resource.FileExistError:
                 response.code = 404

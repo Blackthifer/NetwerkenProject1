@@ -2,7 +2,7 @@
 
 This module contains parses for HTTP response and HTTP requests.
 """
-
+import webhttp.resource
 import webhttp.message
 import logging
 
@@ -74,10 +74,10 @@ class ResponseParser:
         Returns:
             webhttp.message.Response
         """
-        log = logging.getLogger("parse_response")
+        #log = logging.getLogger("parse_response")
         response = webhttp.message.Response()
         responseSplit = buff.split('\r\n\r\n')
-        log.debug("Buff:" + buff)
+        #log.debug("Buff:" + buff)
         headerSplit = responseSplit[0].split('\r\n', 1)
         if len(responseSplit) > 1:
             messageBody = responseSplit[1]
@@ -88,18 +88,19 @@ class ResponseParser:
             headers = headerSplit[1].split('\r\n')
         else:
             headers = []
-        log.debug("startLine:" + startLine)
+        #log.debug("startLine:" + startLine)
         parts = startLine.split(' ')
-        log.debug("response.code:" + parts[1])
+        #log.debug("response.code:" + parts[1])
         response.code = int(parts[1])
         for header in headers:
             headerPair = header.split(': ',1)
             response.set_header(headerPair[0],headerPair[1])
         response.body = messageBody
-		# Encoding
+        # Encoding
         if (response.headerdict.has_key("Content-Encoding")) \
-		and ("gzip" == request.get_header("Content-Encoding")):
-			message = self.resource.ungzip_content(message)				
+        and ("gzip" == response.get_header("Content-Encoding")):
+            unzipper = webhttp.resource.Resource("")
+            response.body = unzipper.ungzip_content(response.body)				
 
         return response
 
