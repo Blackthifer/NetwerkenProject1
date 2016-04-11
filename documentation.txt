@@ -1,5 +1,7 @@
-Don't forget to document your implementation:
--> language + external libraries used (if any)
--> control flow with headers/status codes considered for each requirement (GET, persistent connections, ETag, encoding)
--> concurrency, hashing, resource encoding
--> challenges (if any)
+Netwerken en Gedistribueerde Systemen
+Hessel Bongers s4368312
+Frank Gerlings s4384873
+
+Documentation Project 1: Webserver
+----------------------------------
+
