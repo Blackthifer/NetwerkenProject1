@@ -107,5 +107,5 @@ class Resource:
         Returns:
             str: content decoded with gzip
         """
-        decompressed = zlib.decompress(compressed)
+        decompressed = zlib.decompress(compressed, 16+zlib.MAX_WBITS)
         return decompressed
