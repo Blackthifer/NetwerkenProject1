@@ -13,7 +13,9 @@ reasondict = {
     404 : "Not Found",
     406 : "Not Acceptable",
     408 : "Request Timeout",
-    500 : "Internal Server Error"
+    500 : "Internal Server Error",
+    501 : "Not Implemented",
+    505 : "HTTP Version Not Supported"
 }
 
 

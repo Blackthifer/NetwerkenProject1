@@ -40,7 +40,9 @@ class ResponseComposer:
         """
         response = webhttp.message.Response()
         if not request.method == "GET":
-            response.code = 400
+            response.code = 501
+        if not request.version == "HTTP/1.1":
+            response.code = 505
         else:
             try:
                 response.code = 200
@@ -55,10 +57,6 @@ class ResponseComposer:
                 and newETag == request.get_header("If-None-Match"):
                     response.code = 304
                     response.body = ""
-                else:
-                    if request.headerdict.has_key("If-None-Match"):
-                        print newETag
-                        print request.get_header("If-None-Match")
                 # Encoding
                 if request.headerdict.has_key("Accept-Encoding"):
                     if "gzip" in request.get_header("Accept-Encoding"):
